@@ -36,6 +36,7 @@ export class SearchProductsDto {
   })
   @IsOptional()
   @Type(() => Number)
+  @IsNumber()
   minPrice?: number;
 
   @ApiPropertyOptional({
