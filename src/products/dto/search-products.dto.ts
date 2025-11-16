@@ -44,6 +44,7 @@ export class SearchProductsDto {
   })
   @IsOptional()
   @Type(() => Number)
+  @Min(0)
   maxPrice?: number;
 
   // Pagination
