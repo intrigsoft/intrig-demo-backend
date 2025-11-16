@@ -46,6 +46,7 @@ export class SearchProductsDto {
   })
   @IsOptional()
   @Type(() => Number)
+  @IsNumber()
   @Min(0)
   maxPrice?: number;
 
