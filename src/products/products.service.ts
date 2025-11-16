@@ -71,6 +71,11 @@ export class ProductsService {
     const limit = searchDto.limit || 10;
     const totalItems = products.length;
     const totalPages = Math.ceil(totalItems / limit);
+
+    // If requested page exceeds totalPages (and there is at least one page), throw NotFoundException
+    if (totalPages > 0 && page > totalPages) {
+      throw new NotFoundException(`Page ${page} does not exist. There are only ${totalPages} page(s).`);
+    }
     const startIndex = (page - 1) * limit;
     const endIndex = startIndex + limit;
 
