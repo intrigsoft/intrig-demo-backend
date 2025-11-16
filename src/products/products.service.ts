@@ -103,7 +103,7 @@ export class ProductsService {
     sortBy: 'name' | 'price' | 'category' | 'createdAt' | 'updatedAt',
     sortOrder: 'asc' | 'desc',
   ): Product[] {
-    return products.sort((a, b) => {
+    return [...products].sort((a, b) => {
       let aValue: any;
       let bValue: any;
 
