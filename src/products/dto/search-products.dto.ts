@@ -60,14 +60,16 @@ export class SearchProductsDto {
   page?: number = 1;
 
   @ApiPropertyOptional({
-    description: 'Number of items per page',
+    description: 'Number of items per page (maximum 100)',
     example: 10,
     default: 10,
+    maximum: 100,
   })
   @IsOptional()
   @Type(() => Number)
   @IsInt()
   @Min(1)
+  @Max(100)
   limit?: number = 10;
 
   // Sorting
