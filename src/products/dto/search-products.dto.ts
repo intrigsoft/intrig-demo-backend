@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString, IsBoolean, IsNumber, IsInt, Min, IsIn } from 'class-validator';
+import { IsOptional, IsString, IsBoolean, IsNumber, IsInt, Min, Max, IsIn } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
 
 export class SearchProductsDto {
@@ -26,7 +26,10 @@ export class SearchProductsDto {
     example: true,
   })
   @IsOptional()
-  @Transform(({ value }) => value === 'true' || value === true)
+  @Transform(({ value }) => {
+    if (value === undefined || value === null || value === '') return undefined;
+    return value === 'true' || value === true;
+  })
   @IsBoolean()
   inStock?: boolean;
 
@@ -35,9 +38,9 @@ export class SearchProductsDto {
     example: 10,
   })
   @IsOptional()
-  @Type(() => Number)
-  @Min(0)
   @IsNumber()
+  @Min(0)
+  @Transform(({ value }) => (value === '' || value === null || value === undefined) ? undefined : Number(value))
   minPrice?: number;
 
   @ApiPropertyOptional({
@@ -45,9 +48,9 @@ export class SearchProductsDto {
     example: 200,
   })
   @IsOptional()
-  @Type(() => Number)
   @IsNumber()
   @Min(0)
+  @Transform(({ value }) => (value === '' || value === null || value === undefined) ? undefined : Number(value))
   maxPrice?: number;
 
   // Pagination
