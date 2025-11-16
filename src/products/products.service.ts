@@ -4,6 +4,7 @@ import { DatabaseService, Product } from '../database/database.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { SearchProductsDto } from './dto/search-products.dto';
+import { PaginatedProductsDto, PaginationMeta } from './dto/paginated-products.dto';
 
 @Injectable()
 export class ProductsService {
@@ -11,7 +12,7 @@ export class ProductsService {
 
   async create(createProductDto: CreateProductDto): Promise<Product> {
     const db = this.databaseService.getDatabase();
-    
+
     const newProduct: Product = {
       id: uuidv4(),
       ...createProductDto,
@@ -25,20 +26,22 @@ export class ProductsService {
     return newProduct;
   }
 
-  async findAll(searchDto: SearchProductsDto = {}): Promise<Product[]> {
+  async findAll(searchDto: SearchProductsDto = {}): Promise<PaginatedProductsDto> {
     const db = this.databaseService.getDatabase();
     let products = db.get('products').value();
 
-    // Apply search filters
+    // Apply full-text search across multiple fields
     if (searchDto.search) {
       const searchTerm = searchDto.search.toLowerCase();
       products = products.filter(
         (product) =>
           product.name.toLowerCase().includes(searchTerm) ||
-          product.description.toLowerCase().includes(searchTerm)
+          product.description.toLowerCase().includes(searchTerm) ||
+          product.category.toLowerCase().includes(searchTerm)
       );
     }
 
+    // Apply advanced search filters
     if (searchDto.category) {
       products = products.filter(
         (product) =>
@@ -58,7 +61,74 @@ export class ProductsService {
       products = products.filter((product) => product.price <= searchDto.maxPrice!);
     }
 
-    return products;
+    // Apply sorting
+    if (searchDto.sortBy) {
+      products = this.sortProducts(products, searchDto.sortBy, searchDto.sortOrder || 'asc');
+    }
+
+    // Calculate pagination
+    const page = searchDto.page || 1;
+    const limit = searchDto.limit || 10;
+    const totalItems = products.length;
+    const totalPages = Math.ceil(totalItems / limit);
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+
+    // Apply pagination
+    const paginatedProducts = products.slice(startIndex, endIndex);
+
+    // Build pagination metadata
+    const meta: PaginationMeta = {
+      currentPage: page,
+      itemsPerPage: limit,
+      totalItems,
+      totalPages,
+      hasPreviousPage: page > 1,
+      hasNextPage: page < totalPages,
+    };
+
+    return {
+      data: paginatedProducts,
+      meta,
+    };
+  }
+
+  private sortProducts(
+    products: Product[],
+    sortBy: 'name' | 'price' | 'category' | 'createdAt' | 'updatedAt',
+    sortOrder: 'asc' | 'desc',
+  ): Product[] {
+    return products.sort((a, b) => {
+      let aValue: any;
+      let bValue: any;
+
+      switch (sortBy) {
+        case 'name':
+        case 'category':
+          aValue = a[sortBy].toLowerCase();
+          bValue = b[sortBy].toLowerCase();
+          break;
+        case 'price':
+          aValue = a.price;
+          bValue = b.price;
+          break;
+        case 'createdAt':
+        case 'updatedAt':
+          aValue = new Date(a[sortBy]).getTime();
+          bValue = new Date(b[sortBy]).getTime();
+          break;
+        default:
+          return 0;
+      }
+
+      if (aValue < bValue) {
+        return sortOrder === 'asc' ? -1 : 1;
+      }
+      if (aValue > bValue) {
+        return sortOrder === 'asc' ? 1 : -1;
+      }
+      return 0;
+    });
   }
 
   async findOne(id: string): Promise<Product> {

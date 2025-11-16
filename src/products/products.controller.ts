@@ -15,7 +15,7 @@ import {
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname, join } from 'path';
-import { Response } from 'express';
+import type { Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import {
   ApiTags,
@@ -28,6 +28,7 @@ import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { SearchProductsDto } from './dto/search-products.dto';
+import { PaginatedProductsDto } from './dto/paginated-products.dto';
 import { Product } from '../database/database.service';
 
 @ApiTags('products')
@@ -48,20 +49,27 @@ export class ProductsController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all products with optional search filters' })
+  @ApiOperation({
+    summary: 'Search products with pagination, sorting, and advanced filters',
+    description: 'Get paginated list of products with full-text search, advanced filters, and sorting options'
+  })
   @ApiResponse({
     status: 200,
-    description: 'List of products matching the search criteria.',
-    type: [Product],
+    description: 'Paginated list of products matching the search criteria with metadata.',
+    type: PaginatedProductsDto,
   })
-  @ApiQuery({ name: 'search', required: false, description: 'Search term' })
-  @ApiQuery({ name: 'category', required: false, description: 'Filter by category' })
-  @ApiQuery({ name: 'inStock', required: false, description: 'Filter by stock availability' })
+  @ApiQuery({ name: 'search', required: false, description: 'Full-text search across name, description, and category' })
+  @ApiQuery({ name: 'category', required: false, description: 'Filter by exact category match' })
+  @ApiQuery({ name: 'inStock', required: false, description: 'Filter by stock availability (true/false)' })
   @ApiQuery({ name: 'minPrice', required: false, description: 'Minimum price filter' })
   @ApiQuery({ name: 'maxPrice', required: false, description: 'Maximum price filter' })
+  @ApiQuery({ name: 'page', required: false, description: 'Page number (default: 1)' })
+  @ApiQuery({ name: 'limit', required: false, description: 'Items per page (default: 10)' })
+  @ApiQuery({ name: 'sortBy', required: false, description: 'Sort by field (name, price, category, createdAt, updatedAt)' })
+  @ApiQuery({ name: 'sortOrder', required: false, description: 'Sort order (asc, desc)' })
   async findAll(
     @Query(new ValidationPipe({ transform: true })) searchDto: SearchProductsDto,
-  ): Promise<Product[]> {
+  ): Promise<PaginatedProductsDto> {
     return this.productsService.findAll(searchDto);
   }
 
