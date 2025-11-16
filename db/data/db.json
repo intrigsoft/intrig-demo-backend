@@ -1,0 +1,59 @@
+{
+  "products": [
+    {
+      "id": "1",
+      "name": "Wireless Bluetooth Headphones",
+      "description": "High-quality wireless headphones with noise cancellation",
+      "price": 199.99,
+      "category": "Electronics",
+      "inStock": true,
+      "createdAt": "2025-11-16T10:40:23.033Z",
+      "updatedAt": "2025-11-16T10:40:23.033Z",
+      "images": []
+    },
+    {
+      "id": "2",
+      "name": "Organic Coffee Beans",
+      "description": "Premium organic coffee beans from Colombia",
+      "price": 24.99,
+      "category": "Food & Beverages",
+      "inStock": true,
+      "createdAt": "2025-11-16T10:40:23.034Z",
+      "updatedAt": "2025-11-16T10:40:23.034Z",
+      "images": []
+    },
+    {
+      "id": "3",
+      "name": "Yoga Mat",
+      "description": "Eco-friendly yoga mat with superior grip",
+      "price": 49.99,
+      "category": "Sports & Fitness",
+      "inStock": false,
+      "createdAt": "2025-11-16T10:40:23.034Z",
+      "updatedAt": "2025-11-16T10:40:23.034Z",
+      "images": []
+    },
+    {
+      "id": "4",
+      "name": "LED Desk Lamp",
+      "description": "Adjustable LED desk lamp with USB charging port",
+      "price": 79.99,
+      "category": "Home & Office",
+      "inStock": true,
+      "createdAt": "2025-11-16T10:40:23.034Z",
+      "updatedAt": "2025-11-16T10:40:23.034Z",
+      "images": []
+    },
+    {
+      "id": "5",
+      "name": "Running Shoes",
+      "description": "Lightweight running shoes with advanced cushioning",
+      "price": 129.99,
+      "category": "Sports & Fitness",
+      "inStock": true,
+      "createdAt": "2025-11-16T10:40:23.034Z",
+      "updatedAt": "2025-11-16T10:40:23.034Z",
+      "images": []
+    }
+  ]
+}
